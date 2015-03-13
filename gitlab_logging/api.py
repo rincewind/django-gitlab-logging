@@ -14,7 +14,7 @@ class Gitlab(object):
     """
     Gitlab class
     """
-    def __init__(self, host, user, token=""):
+    def __init__(self, host, user, token="", verify=True):
         """
         on init we setup the token used for all the api calls and all the urls
         :param host: host of gitlab
@@ -33,6 +33,7 @@ class Gitlab(object):
         self.keys_url = self.host + "/api/v3/user/keys"
         self.groups_url = self.host + "/api/v3/groups"
         self.user = user
+        self.verify = verify
 
     def createissue(self, id_, title, description="", assignee_id="",
                     milestone_id="", labels="", sudo=""):
@@ -53,7 +54,7 @@ class Gitlab(object):
         if sudo != "":
             data['sudo'] = sudo
         request = requests.post(self.projects_url + "/" + str(id_) + "/issues",
-                                headers=self.headers, data=data)
+                                headers=self.headers, data=data, verify=self.verify)
         response = json.loads(request.text)
         if request.status_code == 201:
             return True, response
@@ -85,7 +86,7 @@ class Gitlab(object):
             data['sudo'] = sudo
         request = requests.put(self.projects_url + "/" + str(id_) + "/issues/" +
                                str(issue_id), headers=self.headers,
-                               data=data)
+                               data=data, verify=self.verify)
         response = json.loads(request.text)
         if request.status_code == 201:
             return True, response
