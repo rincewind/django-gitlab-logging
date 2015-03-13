@@ -55,7 +55,11 @@ class Gitlab(object):
             data['sudo'] = sudo
         request = requests.post(self.projects_url + "/" + str(id_) + "/issues",
                                 headers=self.headers, data=data, verify=self.verify)
-        response = json.loads(request.text)
+        try:    
+            response = json.loads(request.text)
+        except ValueError, e:
+            raise Exception('POST to /issues did not respond with valid JSON [status={}]: {}'.format(request.status_code, request.text))
+            
         if request.status_code == 201:
             return True, response
         else:
